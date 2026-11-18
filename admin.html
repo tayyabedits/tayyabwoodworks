@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ur-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tayyab Woodworks – Admin</title>
+<style>
+:root{--walnut:#2a1a11;--walnut2:#3b261a;--oak:#e6d8bf;--cream:#f6f0e4;--brass:#b98a3e;--ink:#2a1a11;--muted:#6f5c4b;--line:#ddcfb3;
+ --c1:#8f6420;--c2:#2f7d4f;--c3:#7a2e3a;--c4:#a4522a;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 1rem/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--walnut);color:var(--oak);padding:1.2rem .8rem;display:flex;flex-direction:column;gap:.3rem;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:.6rem;padding:.2rem .5rem 1.2rem;font:700 1.1rem Georgia,serif;color:var(--cream)}
+.brand svg{width:34px;height:34px}
+.nav{display:flex;align-items:center;gap:.7rem;padding:.75rem .9rem;border:0;background:none;color:var(--oak);border-radius:8px;font:500 .98rem inherit;font-family:inherit;cursor:pointer;text-align:left;width:100%}
+.nav:hover{background:var(--walnut2)}.nav.on{background:var(--brass);color:#1d1109;font-weight:700}
+.nav i{font-style:normal;width:1.3rem;text-align:center}
+.side .sp{flex:1}.side .who{padding:.8rem .6rem;border-top:1px solid #4a3425;font-size:.88rem}
+.content{min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.4rem;background:#fffaf0;border-bottom:1px solid var(--line)}
+.top h1{margin:0;font:700 1.4rem Georgia,serif}.top span{color:var(--muted);font-size:.9rem}
+main{padding:1.4rem;max-width:1000px;margin-bottom:6rem}
+.box{background:#fffaf0;border:1px solid var(--line);border-radius:12px;padding:1.1rem;margin-bottom:1rem}
+h2{font:700 1.1rem Georgia,serif;margin:0 0 .7rem}
+h3{margin:0 0 .3rem;font:700 1rem Georgia,serif;color:var(--c1)}
+label{display:block;font-size:.85rem;font-weight:600;margin:.7rem 0 .2rem;color:var(--muted)}
+input[type=text],input[type=number],textarea{width:100%;padding:.65rem .75rem;border:1.5px solid #cdbb9c;border-radius:8px;background:#fff;font:inherit;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+.btn{padding:.65rem 1rem;border-radius:8px;border:0;font:600 .95rem inherit;font-family:inherit;cursor:pointer;background:var(--brass);color:#1d1109;display:inline-flex;align-items:center;gap:.5rem}
+.btn.sec{background:transparent;border:1.5px solid var(--brass);color:var(--ink)}
+.btn.del{background:transparent;border:1.5px solid #b3402e;color:#b3402e}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1rem}
+.stat{border-radius:12px;padding:1rem;color:#fff}.stat b{display:block;font:700 1.9rem Georgia,serif;line-height:1.1}.stat span{font-size:.88rem;opacity:.92}
+.qa{display:grid;gap:.6rem}.qa .btn{justify-content:flex-start;color:#fff;border:0;padding:.85rem 1rem;font-size:1rem}
+.pic{width:100%;max-width:280px;height:190px;border-radius:8px;background:#e6d8bf;border:1px solid var(--line);display:grid;place-items:center;text-align:center;font-size:.78rem;color:var(--muted);overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:cover}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}.ph .row{margin:0}
+.grp{border-top:1px solid var(--line);padding-top:.8rem;margin-top:.8rem}
+.bar{position:fixed;left:240px;right:0;bottom:0;background:var(--walnut);padding:.8rem 1.4rem calc(.8rem + env(safe-area-inset-bottom,0px));display:flex;gap:.6rem;align-items:center;justify-content:space-between;color:var(--oak);font-size:.85rem;z-index:5}
+.msg{padding:.7rem 1rem;border-radius:8px;margin-bottom:1rem;background:#efe3cc}.msg.err{background:#f6d9d3;color:#7a2418}
+.hide{display:none!important}
+@media(max-width:760px){
+ .app{display:block}
+ .side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:.6rem;gap:.3rem;align-items:center}
+ .brand,.side .who,.side .sp{display:none}.nav{width:auto;white-space:nowrap;padding:.6rem .8rem}
+ .bar{left:0}.top{padding:.8rem 1rem}main{padding:1rem}
+ .stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="6" fill="#b98a3e"/><path d="M20 7c-6 5-9 9-9 14a9 9 0 0018 0c0-5-3-9-9-14z" fill="none" stroke="#2a1a11" stroke-width="2.4"/><path d="M20 14v18M20 22l-4-3M20 26l4-3" stroke="#2a1a11" stroke-width="2" fill="none"/></svg>Tayyab Woodworks</div>
+    <button class="nav on" data-v="dash"><i>▦</i>Dashboard</button>
+    <button class="nav" data-v="products"><i>▣</i>Products</button>
+    <button class="nav" data-v="settings"><i>⚙</i>Settings</button>
+    <div class="sp"></div>
+    <div class="who">Welcome back!<br><b>Admin</b></div>
+  </aside>
+  <div class="content">
+    <div class="top"><h1 id="vt">Dashboard</h1><span>Aap ki dukaan ka haal</span></div>
+    <main>
+      <div id="msg" class="hide"></div>
+
+      <section id="v-dash">
+        <div class="box" id="step1">
+          <h2>Step 1: Apni website ki file chunein</h2>
+          <p style="margin:0 0 .8rem;color:var(--muted)">Wo <b>index.html</b> chunein jo aap ne hosting par rakhi hai. Ye file sirf aap ke phone ya computer mein khulti hai, kahin upload nahi hoti.</p>
+          <input type="file" id="file" accept=".html,text/html">
+        </div>
+        <div id="dashLoaded" class="hide">
+          <div class="stats">
+            <div class="stat" style="background:var(--c1)"><b id="st1">0</b><span>Total Products</span></div>
+            <div class="stat" style="background:var(--c2)"><b id="st2">0</b><span>Photo wale products</span></div>
+            <div class="stat" style="background:var(--c3)"><b id="st3">0</b><span>Categories</span></div>
+            <div class="stat" style="background:var(--c4)"><b id="st4">0</b><span>Price on request</span></div>
+          </div>
+          <div class="box">
+            <h2>Quick Actions</h2>
+            <div class="qa">
+              <button class="btn" style="background:var(--c1)" data-go="add">＋ Add New Product</button>
+              <button class="btn" style="background:var(--c2)" data-v="products">▣ Products dekhein</button>
+              <button class="btn" style="background:var(--c3)" data-v="settings">⚙ Site Settings</button>
+              <button class="btn" style="background:var(--c4)" id="dl2">⬇ Nayi index.html download karein</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="v-products" class="hide">
+        <div class="ph" style="margin-bottom:.8rem"><h2 style="margin:0">Products (<span id="cnt">0</span>)</h2><button class="btn" id="add">＋ Naya product add karein</button></div>
+        <div class="box" id="imp">
+          <h2>File se products import karein</h2>
+          <p style="margin:0 0 .6rem;color:var(--muted);font-size:.92rem">CSV ya TXT file mein har line ek product ho: <b>name, category, price_pkr, description, image</b>. Image wale column mein photo ka naam (jaise door1.jpg) ya image ka link likhein. Namuna file se tareeqa dekh lein.</p>
+          <div class="row" style="margin-top:0">
+            <label class="btn sec" style="margin:0;cursor:pointer">1. Photos chunein (agar naam likhe hain)<input type="file" id="imgs" accept="image/*" multiple class="hide"></label>
+            <label class="btn" style="margin:0;cursor:pointer">2. CSV / TXT file chunein<input type="file" id="csvf" accept=".csv,.txt,text/csv,text/plain" class="hide"></label>
+            <button class="btn sec" id="tpl">Namuna file download</button>
+          </div>
+          <div id="impinfo" style="margin-top:.7rem;font-size:.9rem;color:var(--muted)"></div>
+        </div>
+        <div id="list"></div>
+      </section>
+
+      <section id="v-settings" class="hide">
+        <div class="box">
+          <h2>Dukaan ki maloomat</h2>
+          <label for="s_whatsapp">WhatsApp number (92 se shuru, bina + aur space ke)</label>
+          <input type="text" id="s_whatsapp" inputmode="numeric" data-s="whatsapp">
+          <label for="s_phone">Phone number (page par jaisa dikhana hai)</label>
+          <input type="text" id="s_phone" data-s="phoneDisplay">
+          <label for="s_addr">Address</label>
+          <input type="text" id="s_addr" data-s="address">
+          <label for="s_map">Google Maps link</label>
+          <input type="text" id="s_map" data-s="mapsUrl">
+          <label style="display:flex;gap:.5rem;align-items:center;margin-top:1rem;color:var(--ink)"><input type="checkbox" id="tag"> Qeemat ke saath "Sample price" ka label dikhayein</label>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="bar hide" id="bar">
+  <span id="status">Badlav download karne ke liye taiyar hain.</span>
+  <button class="btn" id="dl">Nayi index.html download karein</button>
+</div>
+<datalist id="cats"></datalist>
+
+<script>
+const RE = /(<script type="application\/json" id="site-data">)([\s\S]*?)(<\/script>)/;
+const CATS = ["Wooden Doors","Wooden Windows","Beds","Tables","Chairs","Wardrobes","Kitchen Cabinets","Wooden Shelves","Custom Wooden Furniture"];
+const TITLES = {dash:"Dashboard", products:"Products", settings:"Settings"};
+let html = "", data = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function say(t, err){ const m=$("msg"); m.textContent=t; m.className = t ? "msg"+(err?" err":"") : "hide"; }
+
+function show(v){
+  if(!data && v!=="dash"){ say("Pehle Dashboard mein apni index.html chunein.", true); v="dash"; } else say("");
+  ["dash","products","settings"].forEach(k => $("v-"+k).classList.toggle("hide", k!==v));
+  document.querySelectorAll(".nav").forEach(b => b.classList.toggle("on", b.dataset.v===v));
+  $("vt").textContent = TITLES[v];
+  if(v==="dash") stats();
+  window.scrollTo(0,0);
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-v],[data-go]"); if(!b) return;
+  if(b.dataset.go==="add"){ if(!data) return show("dash"); show("products"); addProduct(); }
+  else show(b.dataset.v);
+});
+
+$("file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    html = await f.text();
+    const m = html.match(RE);
+    if(!m) return say("Ye file purani hai, is mein badlav wala hissa nahi mila. Nayi zip se naya index.html lein, phir dobara chunein.", true);
+    data = JSON.parse(m[2]); data.shop = data.shop || {}; data.products = data.products || [];
+    say(""); $("dashLoaded").classList.remove("hide"); $("step1").classList.add("hide"); $("bar").classList.remove("hide");
+    fillShop(); renderList(); stats();
+  }catch(err){ say("File parh nahi saka: " + err.message, true); }
+});
+
+function stats(){
+  if(!data) return; const P = data.products;
+  $("st1").textContent = P.length;
+  $("st2").textContent = P.filter(p=>p.img).length;
+  $("st3").textContent = new Set(P.map(p=>p.cat).filter(Boolean)).size;
+  $("st4").textContent = P.filter(p=>!p.price).length;
+}
+function fillShop(){
+  document.querySelectorAll("[data-s]").forEach(i => i.value = data.shop[i.dataset.s] || "");
+  $("tag").checked = !!data.showSampleTag;
+}
+document.querySelectorAll("[data-s]").forEach(i => i.addEventListener("input", () => { data.shop[i.dataset.s] = i.value.trim(); dirty(); }));
+$("tag").addEventListener("change", e => { data.showSampleTag = e.target.checked; dirty(); });
+function dirty(){ $("status").textContent = "Badlav hue hain. Download karna na bhoolein."; }
+
+function renderList(){
+  const cats = [...new Set([...CATS, ...data.products.map(p=>p.cat).filter(Boolean)])];
+  $("cats").innerHTML = cats.map(c=>`<option value="${esc(c)}">`).join("");
+  $("cnt").textContent = data.products.length;
+  $("list").innerHTML = data.products.length ? data.products.map((p,i)=>`
+    <div class="box prod" data-i="${i}">
+      <div class="ph"><b>Product ${i+1}</b>
+        <div class="row">
+          <button class="btn sec" data-act="up" ${i===0?"disabled":""}>Upar</button>
+          <button class="btn sec" data-act="down" ${i===data.products.length-1?"disabled":""}>Neeche</button>
+          <button class="btn del" data-act="del">Delete</button>
+        </div>
+      </div>
+      <div class="grp">
+        <h3>1. Photo upload</h3>
+        <div class="pic">${p.img ? `<img src="${esc(p.img)}" alt="">` : "Abhi photo nahi lagi"}</div>
+        <div class="row">
+          <label class="btn" style="margin:0;cursor:pointer">${p.img?"Photo badlein (File / Gallery)":"File / Gallery se photo"}<input type="file" accept="image/*,.jpg,.jpeg,.png,.webp" data-act="photo" class="hide"></label>
+          <label class="btn sec" style="margin:0;cursor:pointer">Camera se photo<input type="file" accept="image/*" capture="environment" data-act="photo" class="hide"></label>
+          ${p.img ? `<button class="btn sec" data-act="nophoto">Photo hatao</button>` : ""}
+        </div>
+      </div>
+      <div class="grp">
+        <h3>2. Naam aur Qeemat</h3>
+        <label>Product ka naam</label><input type="text" data-f="name" placeholder="jaise: Dining Table" value="${esc(p.name)}">
+        <div class="two">
+          <div><label>Qeemat (PKR)</label><input type="number" inputmode="numeric" min="0" data-f="price" placeholder="0 = Price on request" value="${p.price?esc(p.price):""}"></div>
+          <div><label>Category (filter ke liye, zaroori nahi)</label><input type="text" data-f="cat" list="cats" value="${esc(p.cat)}"></div>
+        </div>
+      </div>
+      <div class="grp">
+        <h3>3. Details</h3>
+        <label>Product ki tafseel</label><textarea data-f="desc" placeholder="Wood, size, finish waghera">${esc(p.desc)}</textarea>
+      </div>
+    </div>`).join("") : `<div class="msg">Abhi koi product nahi hai. "＋ Naya product add karein" dabayein.</div>`;
+}
+$("list").addEventListener("input", e => {
+  const f = e.target.dataset.f; if(!f) return;
+  const i = +e.target.closest(".prod").dataset.i;
+  data.products[i][f] = f==="price" ? (parseInt(e.target.value,10)||0) : e.target.value;
+  dirty();
+});
+$("list").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b || b.tagName==="INPUT") return;
+  const i = +b.closest(".prod").dataset.i, a = b.dataset.act, P = data.products;
+  if(a==="del"){ if(!confirm(`"${P[i].name||"Is product"}" delete karein?`)) return; P.splice(i,1); }
+  else if(a==="up"&&i>0) [P[i-1],P[i]]=[P[i],P[i-1]];
+  else if(a==="down"&&i<P.length-1) [P[i+1],P[i]]=[P[i],P[i+1]];
+  else if(a==="nophoto") P[i].img="";
+  else return;
+  dirty(); renderList();
+});
+$("list").addEventListener("change", async e => {
+  if(e.target.dataset.act!=="photo" || !e.target.files[0]) return;
+  const i = +e.target.closest(".prod").dataset.i;
+  try{ data.products[i].img = await shrink(e.target.files[0], 900); dirty(); renderList(); }
+  catch(err){ say("Ye photo khul nahi saki. Koi aur photo try karein.", true); }
+});
+function addProduct(){
+  data.products.push({name:"", cat:"", price:0, desc:"", img:""});
+  dirty(); renderList(); $("list").lastElementChild.scrollIntoView({behavior:"smooth",block:"center"});
+}
+$("add").addEventListener("click", addProduct);
+
+function shrink(file, max){
+  return new Promise((ok, bad) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const r = Math.min(1, max/Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width*r); c.height = Math.round(im.height*r);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", .8));
+    };
+    im.onerror = bad; im.src = url;
+  });
+}
+
+async function download(){
+  if(!data) return;
+  const n = data.products.length; data.products = data.products.filter(p => (p.name||"").trim());
+  if(n !== data.products.length){ renderList(); say("Jin products ka naam khali tha, wo hata diye gaye.", false); }
+  const json = JSON.stringify(data, null, 1).replace(/</g, "\\u003c");
+  const out = html.replace(RE, (m,a,b,c) => a + "\n" + json + "\n" + c);
+  const blob = new Blob([out], {type:"text/html"});
+  try{
+    const d = (window.claude && claude.use) ? await claude.use("downloads") : null;
+    if(d){ await d.save({filename:"index.html", data:blob}); }
+    else{ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="index.html"; document.body.appendChild(a); a.click(); a.remove(); }
+    $("status").textContent = "Nayi index.html taiyar hai. Ab ise hosting par upload karein.";
+  }catch(err){ if(err && err.code==="declined") return; say("Download nahi ho saka. Dobara koshish karein.", true); }
+}
+$("dl").addEventListener("click", download); $("dl2").addEventListener("click", download);
+
+/* ---- File se import (CSV / TXT) ---- */
+const photoMap = {};
+$("imgs").addEventListener("change", async e => {
+  for(const f of [...e.target.files]){ try{ photoMap[f.name.toLowerCase()] = await shrink(f, 900); }catch(_){} }
+  $("impinfo").textContent = Object.keys(photoMap).length + " photos tayyar hain. Ab CSV / TXT file chunein.";
+  e.target.value = "";
+});
+function parseTable(t){
+  t = t.replace(/^\uFEFF/, "");
+  const first = t.split(/\r?\n/).find(l => l.trim()) || "";
+  const d = [["\t",first.split("\t").length],["|",first.split("|").length],[";",first.split(";").length],[",",first.split(",").length]].sort((a,b)=>b[1]-a[1])[0][0];
+  const rows = []; let row = [], cell = "", q = false;
+  for(let i=0;i<t.length;i++){ const c = t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++} else q=false } else cell+=c }
+    else if(c==='"' && cell=="") q=true;
+    else if(c===d){ row.push(cell); cell="" }
+    else if(c==="\n"||c==="\r"){ if(c==="\r"&&t[i+1]==="\n") i++; row.push(cell); cell=""; rows.push(row); row=[] }
+    else cell+=c; }
+  if(cell!==""||row.length){ row.push(cell); rows.push(row) }
+  return rows.filter(r => r.some(x => x.trim()));
+}
+function importRows(rows){
+  const head = rows[0].map(x => x.trim().toLowerCase());
+  const hasHead = head.some(h => ["name","product","naam"].includes(h));
+  const ix = (names, dflt) => hasHead ? head.findIndex(h => names.includes(h)) : dflt;
+  const cN = ix(["name","product","naam"],0), cC = ix(["category","cat"],1), cP = ix(["price_pkr","price","qeemat"],2), cD = ix(["description","desc","details","tafseel"],3), cI = ix(["image","photo","img"],4);
+  const g = (r,i) => i>=0 ? (r[i]||"").trim() : "";
+  let added = 0, missing = 0;
+  rows.slice(hasHead?1:0).forEach(r => {
+    const name = g(r,cN); if(!name) return;
+    let img = g(r,cI);
+    if(img && !/^(data:|https?:\/\/)/i.test(img)){ const k = img.toLowerCase().split(/[\\/]/).pop(); if(photoMap[k]) img = photoMap[k]; else { img = ""; missing++; } }
+    data.products.push({name, cat:g(r,cC), price:parseInt(g(r,cP).replace(/[^\d]/g,""),10)||0, desc:g(r,cD), img});
+    added++;
+  });
+  return {added, missing};
+}
+$("csvf").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const rows = parseTable(await f.text());
+    if(!rows.length) throw new Error("File khali hai");
+    const {added, missing} = importRows(rows);
+    dirty(); renderList(); stats();
+    $("impinfo").textContent = added + " products jude." + (missing ? " " + missing + " photos nahi mili (pehle 'Photos chunein' se wo photos chunein, phir file dobara chunein)." : "");
+  }catch(err){ say("File import nahi ho saki: " + err.message, true); }
+  e.target.value = "";
+});
+$("tpl").addEventListener("click", async () => {
+  const csv = 'name,category,price_pkr,description,image\nDining Table,Tables,75000,"Six seater, solid wood",table1.jpg\nMain Door,Wooden Doors,45000,Polished panel door,door1.jpg\n';
+  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv"});
+  try{
+    const d = (window.claude && claude.use) ? await claude.use("downloads") : null;
+    if(d){ await d.save({filename:"products-namuna.csv", data:blob}); }
+    else{ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="products-namuna.csv"; document.body.appendChild(a); a.click(); a.remove(); }
+  }catch(err){ if(err && err.code==="declined") return; say("Download nahi ho saka.", true); }
+});
+</script>
+</body>
+</html>
